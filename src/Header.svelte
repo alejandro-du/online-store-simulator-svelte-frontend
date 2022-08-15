@@ -75,7 +75,7 @@
 	/>
 </svelte:head>
 
-<Navbar color="light">
+<Navbar light>
 	<NavbarBrand>
 		<Image
 			alt="MariaDB"
