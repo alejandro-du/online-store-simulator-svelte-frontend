@@ -101,7 +101,7 @@
 		<Col>
 			<FormGroup>
 				<InputGroup>
-					<InputGroupText>$</InputGroupText>
+					<InputGroupText>&nbsp;$&nbsp;</InputGroupText>
 					<Input
 						bind:value={$maxBudgetPerVisitor}
 						type="number"

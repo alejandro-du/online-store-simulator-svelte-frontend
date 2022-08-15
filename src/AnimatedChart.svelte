@@ -3,18 +3,29 @@
 	import ApexCharts from "apexcharts";
 
 	export let title;
-	export let type;
+	export let names = [];
+	export let type = [];
 	export let curve;
 
-	export function update(newValue) {
-		data = [...data, [x++, newValue]];
-		chart.updateSeries([{ data: data }]);
-		if (data.length > range * 10) {
-			data = data.slice(data.length - range - 1, data.length);
+	export function update(...values) {
+		let series = [];
+		for (let i = 0; i < values.length; i++) {
+			data[i] = [...data[i], [x, values[i]]];
+			series.push({ data: data[i], type: type[i], name: names[i] });
+
+			if (data[i].length > range * 10) {
+				data[i] = data[0].slice(
+					data[i].length - range - 1,
+					data[i].length
+				);
+			}
 		}
+
+		chart.updateSeries(series);
+		x++;
 	}
 
-	let data = [];
+	let data = [[], [], []];
 	let chartDiv;
 	let chart;
 	let x = 1;
@@ -23,16 +34,37 @@
 	const options = {
 		series: [
 			{
-				name: "Value",
-				data: data,
+				data: [],
 			},
 		],
+		grid: {
+			row: {
+				colors: ["#f3f3f3", "transparent"],
+				opacity: 0.5,
+			},
+		},
+		fill: {
+			type: "gradient",
+			gradient: {
+				shade: "light",
+				type: "vertical",
+				inverseColors: true,
+				opacityFrom: 0.75,
+				opacityTo: 0.3,
+				stops: [0, 100],
+			},
+		},
 		xaxis: {
 			type: "numeric",
 			range: range,
 		},
+		dataLabels: {
+			enabled: false,
+		},
 		chart: {
-			type: type,
+			legend: {
+				show: false,
+			},
 			height: 350,
 			toolbar: {
 				show: false,

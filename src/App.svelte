@@ -5,7 +5,6 @@
 		CardHeader,
 		Col,
 		Container,
-		Icon,
 		Row,
 	} from "sveltestrap";
 	import AnimatedChart from "./AnimatedChart.svelte";
@@ -45,8 +44,12 @@
 				disappointedVisitors += summary.disappointedVisitors;
 				missedOpportunityTotal += summary.missedOpportunityTotal;
 
-				accumulatedIncomeChart.update(accumulatedIncome);
+				accumulatedIncomeChart.update(
+					accumulatedIncome,
+					missedOpportunityTotal
+				);
 				averageWaitTimeMillisChart.update(
+					summary.maxWaitTimeMillis,
 					summary.averageWaitTimeMillis
 				);
 			}
@@ -80,8 +83,9 @@
 					<CardBody>
 						<AnimatedChart
 							bind:this={accumulatedIncomeChart}
-							title="Accumulated Income"
-							type="line"
+							title="Income"
+							names={["Accumulated", "Missed"]}
+							type={["area", "line"]}
 							curve="smooth"
 						/>
 					</CardBody>
@@ -91,8 +95,9 @@
 					<CardBody>
 						<AnimatedChart
 							bind:this={averageWaitTimeMillisChart}
-							title="Average wait time"
-							type="line"
+							title="Waiting time"
+							names={["Max", "Average"]}
+							type={["area", "line"]}
 							curve="stepline"
 						/>
 					</CardBody>
