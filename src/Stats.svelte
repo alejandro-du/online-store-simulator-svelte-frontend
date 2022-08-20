@@ -8,7 +8,11 @@
 <Row class="text-center">
 	<Col>
 		<h2>
-			<Icon name="emoji-angry" />
+			{#if disappointedVisitors > 0}
+				<Icon name="emoji-angry" />
+			{:else}
+				<Icon name="emoji-smile" />
+			{/if}
 			{disappointedVisitors}
 		</h2>
 		<div>Disappointed visitors</div>

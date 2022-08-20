@@ -81,7 +81,7 @@
 			alt="MariaDB"
 			height="25"
 			class="d-inline-block align-text-top"
-			src="https://mariadb.com/wp-content/uploads/2019/11/mariadb-logo-vertical_blue.svg"
+			src="https://mariadb.com/wp-content/uploads/2019/11/mariadb-logo-vertical_black.svg"
 		/>
 		Online Store Simulator
 	</NavbarBrand>
