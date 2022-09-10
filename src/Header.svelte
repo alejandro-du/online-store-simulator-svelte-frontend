@@ -41,7 +41,7 @@
 
 	async function deleteAllOrders() {
 		showDeleteAllOrdersToast = true;
-		const response = await fetch(`${$apiUrl}/orders/`, {
+		const response = await fetch(`${$apiUrl}/orders`, {
 			method: "DELETE",
 		});
 		showDeleteAllOrdersToast = !(showDeleteAllOrdersDoneToast = true);
@@ -49,7 +49,7 @@
 
 	async function deleteAllProducts() {
 		showDeleteAllProductsToast = true;
-		const response = await fetch(`${$apiUrl}/products/`, {
+		const response = await fetch(`${$apiUrl}/products`, {
 			method: "DELETE",
 		});
 		showDeleteAllProductsToast = !(showDeleteAllProductsDoneToast = true);
@@ -59,7 +59,7 @@
 		showCreateDemoProductsModel = false;
 		showCreateDemoProductsToast = true;
 		const response = await fetch(
-			`${$apiUrl}/products/demo/?count=${numberOfProducts}&minPrice=${minProductPrice}&maxPrice=${maxProductPrice}`,
+			`${$apiUrl}/products/demo?count=${numberOfProducts}&minPrice=${minProductPrice}&maxPrice=${maxProductPrice}`,
 			{
 				method: "POST",
 			}

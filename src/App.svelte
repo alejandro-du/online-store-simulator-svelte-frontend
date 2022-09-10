@@ -10,49 +10,44 @@
 	import AnimatedChart from "./AnimatedChart.svelte";
 	import ConfigForm from "./ConfigForm.svelte";
 	import Header from "./Header.svelte";
-	import Stats from "./Stats.svelte";
 	import {
 		apiUrl,
-		visitorsPerSecond,
-		conversionRate,
-		productViewsPerVisitor,
-		maxWaitingTimeMillis,
+		productViewsPerSecond,
+		ordersPerSecond,
 		itemsPerOrder,
-		maxBudgetPerVisitor,
+		timeoutMillis,
 	} from "./stores.js";
 
-	let accumulatedIncome = 0.0;
-	let disappointedVisitors = 0;
-	let missedOpportunityTotal = 0;
-	let accumulatedIncomeChart;
-	let averageWaitTimeMillisChart;
+	let viewsSource;
+	let ordersSource;
+	let viewsChart;
+	let ordersChart;
 
-	setInterval(generateOrders, 1000);
+	function updateSimulation() {
+		if(viewsSource) {
+			viewsSource.close();
+		}
 
-	async function generateOrders() {
-		if ($visitorsPerSecond > 0) {
-			const response = await fetch(
-				`${$apiUrl}/orders/random/?visitors=${$visitorsPerSecond}&conversionRate=${$conversionRate}&productViewsPerVisitor=${$productViewsPerVisitor}&maxWaitingTimeMillis=${$maxWaitingTimeMillis}&itemsPerOrder=${$itemsPerOrder}&maxBudgetPerVisitor=${$maxBudgetPerVisitor}`,
-				{
-					method: "POST",
-				}
+		if(ordersSource) {
+			ordersSource.close();
+		}
+		
+		if ($productViewsPerSecond > 0) {
+			viewsSource = new EventSource(
+				`${$apiUrl}/simulation/views?count=${$productViewsPerSecond}&intervalSeconds=1&timeoutMillis=${$timeoutMillis}`
 			);
+			viewsSource.onmessage = (event) => {
+				viewsChart.update(event.data);
+			};
+		}
 
-			if (response.ok) {
-				const summary = await response.json();
-				accumulatedIncome += summary.salesTotal;
-				disappointedVisitors += summary.disappointedVisitors;
-				missedOpportunityTotal += summary.missedOpportunityTotal;
-
-				accumulatedIncomeChart.update(
-					accumulatedIncome,
-					missedOpportunityTotal
-				);
-				averageWaitTimeMillisChart.update(
-					summary.maxWaitTimeMillis,
-					summary.averageWaitTimeMillis
-				);
-			}
+		if($ordersPerSecond > 0) {
+			ordersSource = new EventSource(
+				`${$apiUrl}/simulation/orders?count=${$ordersPerSecond}&itemsPerOrder=${$itemsPerOrder}&intervalSeconds=1&timeoutMillis=${$timeoutMillis}`
+			);
+			ordersSource.onmessage = (event) => {
+				ordersChart.update(event.data);
+			};
 		}
 	}
 </script>
@@ -63,18 +58,9 @@
 		<Row>
 			<Col class="gy-3">
 				<Card>
-					<CardBody>
-						<Stats
-							bind:disappointedVisitors
-							bind:missedOpportunityTotal
-						/>
-					</CardBody>
-				</Card>
-				<p />
-				<Card>
 					<CardHeader>Settings</CardHeader>
 					<CardBody>
-						<ConfigForm />
+						<ConfigForm update={updateSimulation} />
 					</CardBody>
 				</Card>
 			</Col>
@@ -82,9 +68,9 @@
 				<Card>
 					<CardBody>
 						<AnimatedChart
-							bind:this={accumulatedIncomeChart}
-							title="Income"
-							names={["Accumulated", "Missed"]}
+							bind:this={viewsChart}
+							title="Products view delay (ms)"
+							names={["Milliseconds", "Missed"]}
 							type={["area", "line"]}
 							curve="smooth"
 						/>
@@ -94,11 +80,11 @@
 				<Card>
 					<CardBody>
 						<AnimatedChart
-							bind:this={averageWaitTimeMillisChart}
-							title="Waiting time"
-							names={["Max", "Average"]}
+							bind:this={ordersChart}
+							title="Orders delay (ms)"
+							names={["Milliseconds", "Average"]}
 							type={["area", "line"]}
-							curve="stepline"
+							curve="smooth"
 						/>
 					</CardBody>
 				</Card>
