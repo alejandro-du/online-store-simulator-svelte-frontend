@@ -35,36 +35,45 @@
 	let showCreateDemoProductsDoneToast = false;
 	let showCreateDemoProductsModel = false;
 
-	let numberOfProducts = 15000;
+	let numberOfProducts = 20000;
 	let minProductPrice = 5;
 	let maxProductPrice = 3000;
 
 	async function deleteAllOrders() {
 		showDeleteAllOrdersToast = true;
-		const response = await fetch(`${$apiUrl}/orders`, {
-			method: "DELETE",
-		});
-		showDeleteAllOrdersToast = !(showDeleteAllOrdersDoneToast = true);
+		let eventSource = new EventSource(`${$apiUrl}/orders/deleteAll`);
+		eventSource.onmessage = (event) => {
+			eventSource.close();
+			showDeleteAllOrdersToast = !(showDeleteAllOrdersDoneToast = true);
+		};
 	}
 
 	async function deleteAllProducts() {
 		showDeleteAllProductsToast = true;
-		const response = await fetch(`${$apiUrl}/products`, {
-			method: "DELETE",
-		});
-		showDeleteAllProductsToast = !(showDeleteAllProductsDoneToast = true);
+		let eventSource = new EventSource(`${$apiUrl}/products/deleteAll`);
+		eventSource.onmessage = (event) => {
+			eventSource.close();
+			showDeleteAllProductsToast = !(showDeleteAllProductsDoneToast =
+				true);
+		};
 	}
 
 	async function createDemoProducts() {
 		showCreateDemoProductsModel = false;
 		showCreateDemoProductsToast = true;
-		const response = await fetch(
-			`${$apiUrl}/products/demo?count=${numberOfProducts}&minPrice=${minProductPrice}&maxPrice=${maxProductPrice}`,
-			{
-				method: "POST",
-			}
+		let eventSource = new EventSource(
+			`${$apiUrl}/products/createDemoData?count=${numberOfProducts}&minPrice=${minProductPrice}&maxPrice=${maxProductPrice}`
 		);
-		showCreateDemoProductsToast = !(showCreateDemoProductsDoneToast = true);
+
+		let count = 0;
+		eventSource.onmessage = (event) => {
+			count++;
+			if (count >= numberOfProducts) {
+				eventSource.close();
+				showCreateDemoProductsToast =
+					!(showCreateDemoProductsDoneToast = true);
+			}
+		};
 	}
 </script>
 

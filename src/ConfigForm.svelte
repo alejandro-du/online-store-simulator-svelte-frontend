@@ -2,7 +2,6 @@
 	import {
 		Button,
 		Col,
-		Form,
 		FormGroup,
 		FormText,
 		Icon,
@@ -13,8 +12,9 @@
 		Row,
 	} from "sveltestrap";
 	import {
-		productViewsPerSecond,
-		ordersPerSecond,
+		intervalInSeconds,
+		productViewsPerInterval,
+		ordersPerInterval,
 		itemsPerOrder,
 		timeoutMillis,
 	} from "./stores.js";
@@ -23,24 +23,35 @@
 </script>
 
 <FormGroup>
+	<Icon name="stopwatch-fill" />
+	<Label for="intervalInSeconds">Interval duration in seconds:</Label>
+	<Input
+		id="intervalInSeconds"
+		bind:value={$intervalInSeconds}
+		type="number"
+		min="0"
+		max="60"
+	/>
+</FormGroup>
+<FormGroup>
 	<Icon name="people-fill" />
-	<Label for="productViewsPerSecond">Product views per second:</Label>
-	<span>{$productViewsPerSecond}</span>
+	<Label for="productViewsPerSecond">Product views per interval:</Label>
+	<span>{$productViewsPerInterval}</span>
 	<Input
 		id="productViewsPerSecond"
-		bind:value={$productViewsPerSecond}
+		bind:value={$productViewsPerInterval}
 		type="range"
 		min="0"
-		max="100"
+		max="500"
 	/>
 </FormGroup>
 <FormGroup>
 	<Icon name="funnel-fill" />
-	<Label for="ordersPerSecond">Orders per second:</Label>
-	<span>{$ordersPerSecond}</span>
+	<Label for="ordersPerInterval">Orders per interval:</Label>
+	<span>{$ordersPerInterval}</span>
 	<Input
-		id="ordersPerSecond"
-		bind:value={$ordersPerSecond}
+		id="ordersPerInterval"
+		bind:value={$ordersPerInterval}
 		type="range"
 		min="0"
 		max="100"

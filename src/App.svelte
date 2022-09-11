@@ -10,10 +10,12 @@
 	import AnimatedChart from "./AnimatedChart.svelte";
 	import ConfigForm from "./ConfigForm.svelte";
 	import Header from "./Header.svelte";
+	import Stats from "./Stats.svelte";
 	import {
 		apiUrl,
-		productViewsPerSecond,
-		ordersPerSecond,
+		intervalInSeconds,
+		productViewsPerInterval,
+		ordersPerInterval,
 		itemsPerOrder,
 		timeoutMillis,
 	} from "./stores.js";
@@ -22,6 +24,8 @@
 	let ordersSource;
 	let viewsChart;
 	let ordersChart;
+	let missedOportunities = 0;
+	let disappointingVisitors = 0;
 
 	function updateSimulation() {
 		if(viewsSource) {
@@ -32,21 +36,31 @@
 			ordersSource.close();
 		}
 		
-		if ($productViewsPerSecond > 0) {
+		if ($productViewsPerInterval > 0) {
 			viewsSource = new EventSource(
-				`${$apiUrl}/simulation/views?count=${$productViewsPerSecond}&intervalSeconds=1&timeoutMillis=${$timeoutMillis}`
+				`${$apiUrl}/simulation/views?count=${$productViewsPerInterval}&intervalSeconds=${$intervalInSeconds}&timeoutMillis=${$timeoutMillis}`
 			);
 			viewsSource.onmessage = (event) => {
-				viewsChart.update(event.data);
+				let data = JSON.parse(event.data);
+				if(data.timedOut) {
+					disappointingVisitors++;
+				}
+				
+				viewsChart.update(data.time);
 			};
 		}
 
-		if($ordersPerSecond > 0) {
+		if($ordersPerInterval > 0) {
 			ordersSource = new EventSource(
-				`${$apiUrl}/simulation/orders?count=${$ordersPerSecond}&itemsPerOrder=${$itemsPerOrder}&intervalSeconds=1&timeoutMillis=${$timeoutMillis}`
+				`${$apiUrl}/simulation/orders?count=${$ordersPerInterval}&itemsPerOrder=${$itemsPerOrder}&intervalSeconds=${$intervalInSeconds}&timeoutMillis=${$timeoutMillis}`
 			);
 			ordersSource.onmessage = (event) => {
-				ordersChart.update(event.data);
+				let data = JSON.parse(event.data);
+				if(data.timedOut) {
+					missedOportunities++;
+					
+				}
+				ordersChart.update(data.time);
 			};
 		}
 	}
@@ -57,6 +71,15 @@
 		<Header />
 		<Row>
 			<Col class="gy-3">
+				<Card>
+					<CardBody>
+						<Stats
+							bind:disappointingVisitors
+							bind:missedOportunities
+						/>
+					</CardBody>
+				</Card>
+				<p />
 				<Card>
 					<CardHeader>Settings</CardHeader>
 					<CardBody>
