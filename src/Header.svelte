@@ -27,40 +27,33 @@
 
 	import { apiUrl } from "./stores";
 
-	let showDeleteAllOrdersToast = false;
-	let showDeleteAllOrdersDoneToast = false;
-	let showDeleteAllProductsToast = false;
-	let showDeleteAllProductsDoneToast = false;
-	let showCreateDemoProductsToast = false;
-	let showCreateDemoProductsDoneToast = false;
 	let showCreateDemoProductsModel = false;
+	let showWaitToast = false;
+	let showDoneToast = false;
+	let toastHeader = "";
+	let toastBody = "";
 
-	let numberOfProducts = 20000;
+	let numberOfProducts = 5000;
 	let minProductPrice = 5;
 	let maxProductPrice = 3000;
 
-	async function deleteAllOrders() {
-		showDeleteAllOrdersToast = true;
-		let eventSource = new EventSource(`${$apiUrl}/orders/deleteAll`);
-		eventSource.onmessage = (event) => {
-			eventSource.close();
-			showDeleteAllOrdersToast = !(showDeleteAllOrdersDoneToast = true);
-		};
+	function showWaitMessage(text) {
+		showDoneToast = false;
+		toastHeader = text;
+		toastBody = "Please wait...";
+		showWaitToast = true;
 	}
 
-	async function deleteAllProducts() {
-		showDeleteAllProductsToast = true;
-		let eventSource = new EventSource(`${$apiUrl}/products/deleteAll`);
-		eventSource.onmessage = (event) => {
-			eventSource.close();
-			showDeleteAllProductsToast = !(showDeleteAllProductsDoneToast =
-				true);
-		};
+	function showDoneMessage(text) {
+		showWaitToast = false;
+		toastHeader = "Done.";
+		toastBody = text;
+		showDoneToast = true;
 	}
 
 	async function createDemoProducts() {
 		showCreateDemoProductsModel = false;
-		showCreateDemoProductsToast = true;
+		showWaitMessage("Creating demo products...");
 		let eventSource = new EventSource(
 			`${$apiUrl}/products/createDemoData?count=${numberOfProducts}&minPrice=${minProductPrice}&maxPrice=${maxProductPrice}`
 		);
@@ -70,11 +63,45 @@
 			count++;
 			if (count >= numberOfProducts) {
 				eventSource.close();
-				showCreateDemoProductsToast =
-					!(showCreateDemoProductsDoneToast = true);
+				showDoneMessage("Products created.");
 			}
 		};
 	}
+
+	async function countProducts() {
+		let eventSource = new EventSource(`${$apiUrl}/products/count`);
+		eventSource.onmessage = (event) => {
+			eventSource.close();
+			showDoneMessage(`${event.data} products.`);
+		};
+	}
+
+	async function countOrders() {
+		let eventSource = new EventSource(`${$apiUrl}/orders/count`);
+		eventSource.onmessage = (event) => {
+			eventSource.close();
+			showDoneMessage(`${event.data} orders.`);
+		};
+	}
+
+	async function deleteAllOrders() {
+		showWaitMessage("Deleting all orders...");
+		let eventSource = new EventSource(`${$apiUrl}/orders/deleteAll`);
+		eventSource.onmessage = (event) => {
+			eventSource.close();
+			showDoneMessage("Orders deleted.");
+		};
+	}
+
+	async function deleteAllProducts() {
+		showWaitMessage("Deleteing all products...");
+		let eventSource = new EventSource(`${$apiUrl}/products/deleteAll`);
+		eventSource.onmessage = (event) => {
+			eventSource.close();
+			showDoneMessage("Products deleted.");
+		};
+	}
+
 </script>
 
 <svelte:head>
@@ -111,8 +138,16 @@
 					<DropdownItem
 						on:click={() => (showCreateDemoProductsModel = true)}
 					>
-						Create demo products...
+						Create products...
 					</DropdownItem>
+					<DropdownItem divider />
+					<DropdownItem on:click={countOrders}>
+						Count orders
+					</DropdownItem>
+					<DropdownItem on:click={countProducts}>
+						Count products
+					</DropdownItem>
+					<DropdownItem divider />
 					<DropdownItem on:click={deleteAllOrders}>
 						Delete all orders
 					</DropdownItem>
@@ -168,92 +203,26 @@
 
 <div class="toast-container position-fixed bottom-0 end-0">
 	<Toast
-		autohide
-		class="bg-success text-light"
-		isOpen={showDeleteAllOrdersDoneToast}
-		on:close={() => (showDeleteAllOrdersDoneToast = false)}
-	>
-		<ToastHeader
-			toggle={() =>
-				(showDeleteAllOrdersDoneToast = !showDeleteAllOrdersDoneToast)}
-		>
-			<Icon name="table" slot="icon" class="me-2" />
-			Done.
-		</ToastHeader>
-		<ToastBody>All orders deleted.</ToastBody>
-	</Toast>
-	<Toast
 		class="bg-primary text-light"
-		isOpen={showDeleteAllOrdersToast}
-		on:close={() => (showDeleteAllOrdersToast = false)}
+		isOpen={showWaitToast}
+		on:close={() => (showWaitToast = false)}
 	>
-		<ToastHeader
-			toggle={() =>
-				(showDeleteAllOrdersToast = !showDeleteAllOrdersToast)}
-		>
+		<ToastHeader toggle={() => (showWaitToast = !showWaitToast)}>
 			<Icon name="table" slot="icon" class="me-2" />
-			Deleting all orders...
+			{toastHeader}
 		</ToastHeader>
-		<ToastBody>Please wait.</ToastBody>
+		<ToastBody>{toastBody}</ToastBody>
 	</Toast>
 	<Toast
 		autohide
 		class="bg-success text-light"
-		isOpen={showDeleteAllProductsDoneToast}
-		on:close={() => (showDeleteAllProductsDoneToast = false)}
+		isOpen={showDoneToast}
+		on:close={() => (showDoneToast = false)}
 	>
-		<ToastHeader
-			toggle={() =>
-				(showDeleteAllProductsDoneToast =
-					!showDeleteAllProductsDoneToast)}
-		>
+		<ToastHeader toggle={() => (showDoneToast = !showDoneToast)}>
 			<Icon name="table" slot="icon" class="me-2" />
-			Done.
+			{toastHeader}
 		</ToastHeader>
-		<ToastBody>All products deleted.</ToastBody>
-	</Toast>
-	<Toast
-		class="bg-primary text-light"
-		isOpen={showDeleteAllProductsToast}
-		on:close={() => (showDeleteAllProductsToast = false)}
-	>
-		<ToastHeader
-			toggle={() =>
-				(showDeleteAllProductsToast = !showDeleteAllProductsToast)}
-		>
-			<Icon name="table" slot="icon" class="me-2" />
-			Deleting all products...
-		</ToastHeader>
-		<ToastBody>Please wait.</ToastBody>
-	</Toast>
-	<Toast
-		autohide
-		class="bg-success text-light"
-		isOpen={showCreateDemoProductsDoneToast}
-		on:close={() => (showCreateDemoProductsDoneToast = false)}
-	>
-		<ToastHeader
-			toggle={() =>
-				(showCreateDemoProductsDoneToast =
-					!showCreateDemoProductsDoneToast)}
-		>
-			<Icon name="table" slot="icon" class="me-2" />
-			Done.
-		</ToastHeader>
-		<ToastBody>Demo products created.</ToastBody>
-	</Toast>
-	<Toast
-		class="bg-primary text-light"
-		isOpen={showCreateDemoProductsToast}
-		on:close={() => (showCreateDemoProductsToast = false)}
-	>
-		<ToastHeader
-			toggle={() =>
-				(showCreateDemoProductsToast = !showCreateDemoProductsToast)}
-		>
-			<Icon name="table" slot="icon" class="me-2" />
-			Creating demo products...
-		</ToastHeader>
-		<ToastBody>Please wait.</ToastBody>
+		<ToastBody>{toastBody}</ToastBody>
 	</Toast>
 </div>

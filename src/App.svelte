@@ -28,37 +28,39 @@
 	let disappointingVisitors = 0;
 
 	function updateSimulation() {
-		if(viewsSource) {
+		if (viewsSource) {
 			viewsSource.close();
 		}
 
-		if(ordersSource) {
+		if (ordersSource) {
 			ordersSource.close();
 		}
-		
+
 		if ($productViewsPerInterval > 0) {
 			viewsSource = new EventSource(
 				`${$apiUrl}/simulation/views?count=${$productViewsPerInterval}&intervalSeconds=${$intervalInSeconds}&timeoutMillis=${$timeoutMillis}`
 			);
+			const timeout = $timeoutMillis;
 			viewsSource.onmessage = (event) => {
 				let data = JSON.parse(event.data);
-				if(data.timedOut) {
+				if (data.time == -1) {
 					disappointingVisitors++;
+					data.time = timeout;
 				}
-				
 				viewsChart.update(data.time);
 			};
 		}
 
-		if($ordersPerInterval > 0) {
+		if ($ordersPerInterval > 0) {
 			ordersSource = new EventSource(
 				`${$apiUrl}/simulation/orders?count=${$ordersPerInterval}&itemsPerOrder=${$itemsPerOrder}&intervalSeconds=${$intervalInSeconds}&timeoutMillis=${$timeoutMillis}`
 			);
+			const timeout = $timeoutMillis;
 			ordersSource.onmessage = (event) => {
 				let data = JSON.parse(event.data);
-				if(data.timedOut) {
+				if (data.time == -1) {
 					missedOportunities++;
-					
+					data.time = timeout;
 				}
 				ordersChart.update(data.time);
 			};
@@ -92,7 +94,7 @@
 					<CardBody>
 						<AnimatedChart
 							bind:this={viewsChart}
-							title="Products view delay (ms)"
+							title="Max view delay (ms)"
 							names={["Milliseconds", "Missed"]}
 							type={["area", "line"]}
 							curve="smooth"
@@ -104,7 +106,7 @@
 					<CardBody>
 						<AnimatedChart
 							bind:this={ordersChart}
-							title="Orders delay (ms)"
+							title="Max order delay (ms)"
 							names={["Milliseconds", "Average"]}
 							type={["area", "line"]}
 							curve="smooth"
