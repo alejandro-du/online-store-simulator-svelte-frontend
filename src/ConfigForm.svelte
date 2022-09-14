@@ -12,49 +12,43 @@
 		Row,
 	} from "sveltestrap";
 	import {
-		intervalInSeconds,
-		productViewsPerInterval,
-		ordersPerInterval,
 		itemsPerOrder,
+		ordersPerMinute,
 		timeoutMillis,
+		viewsPerMinute,
 	} from "./stores.js";
 
 	export let update;
 </script>
 
 <FormGroup>
-	<Icon name="stopwatch-fill" />
-	<Label for="intervalInSeconds">Interval duration in seconds:</Label>
+	<Label for="viewsPerMinute">Views per minute:</Label>
+	<InputGroup>
+		<InputGroupText><Icon name="people-fill" /></InputGroupText>
+		<Input bind:value={$viewsPerMinute} type="number" />
+	</InputGroup>
 	<Input
-		id="intervalInSeconds"
-		bind:value={$intervalInSeconds}
-		type="number"
+		id="viewsPerMinute"
+		bind:value={$viewsPerMinute}
+		type="range"
 		min="0"
-		max="60"
+		max="500000"
+		step="100"
 	/>
 </FormGroup>
 <FormGroup>
-	<Icon name="people-fill" />
-	<Label for="productViewsPerSecond">Product views per interval:</Label>
-	<span>{$productViewsPerInterval}</span>
+	<Label for="ordersPerMinute">Orders per minute:</Label>
+	<InputGroup>
+		<InputGroupText><Icon name="funnel-fill" /></InputGroupText>
+		<Input bind:value={$ordersPerMinute} type="number" />
+	</InputGroup>
 	<Input
-		id="productViewsPerSecond"
-		bind:value={$productViewsPerInterval}
+		id="ordersPerMinute"
+		bind:value={$ordersPerMinute}
 		type="range"
 		min="0"
-		max="500"
-	/>
-</FormGroup>
-<FormGroup>
-	<Icon name="funnel-fill" />
-	<Label for="ordersPerInterval">Orders per interval:</Label>
-	<span>{$ordersPerInterval}</span>
-	<Input
-		id="ordersPerInterval"
-		bind:value={$ordersPerInterval}
-		type="range"
-		min="0"
-		max="100"
+		max="5000"
+		step="100"
 	/>
 </FormGroup>
 <Row>
@@ -71,7 +65,12 @@
 		<FormGroup>
 			<InputGroup>
 				<InputGroupText><Icon name="clock-fill" /></InputGroupText>
-				<Input bind:value={$timeoutMillis} type="number" min="1" step="100" />
+				<Input
+					bind:value={$timeoutMillis}
+					type="number"
+					min="1"
+					step="10"
+				/>
 			</InputGroup>
 			<FormText>Timeout in milliseconds</FormText>
 		</FormGroup>

@@ -13,9 +13,8 @@
 	import Stats from "./Stats.svelte";
 	import {
 		apiUrl,
-		intervalInSeconds,
-		productViewsPerInterval,
-		ordersPerInterval,
+		viewsPerMinute,
+		ordersPerMinute,
 		itemsPerOrder,
 		timeoutMillis,
 	} from "./stores.js";
@@ -36,9 +35,9 @@
 			ordersSource.close();
 		}
 
-		if ($productViewsPerInterval > 0) {
+		if ($viewsPerMinute > 0) {
 			viewsSource = new EventSource(
-				`${$apiUrl}/simulation/views?count=${$productViewsPerInterval}&intervalSeconds=${$intervalInSeconds}&timeoutMillis=${$timeoutMillis}`
+				`${$apiUrl}/simulation/views?viewsPerMinute=${$viewsPerMinute}&timeoutMillis=${$timeoutMillis}`
 			);
 			const timeout = $timeoutMillis;
 			viewsSource.onmessage = (event) => {
@@ -51,9 +50,9 @@
 			};
 		}
 
-		if ($ordersPerInterval > 0) {
+		if ($ordersPerMinute > 0) {
 			ordersSource = new EventSource(
-				`${$apiUrl}/simulation/orders?count=${$ordersPerInterval}&itemsPerOrder=${$itemsPerOrder}&intervalSeconds=${$intervalInSeconds}&timeoutMillis=${$timeoutMillis}`
+				`${$apiUrl}/simulation/orders?ordersPerMinute=${$ordersPerMinute}&itemsPerOrder=${$itemsPerOrder}&timeoutMillis=${$timeoutMillis}`
 			);
 			const timeout = $timeoutMillis;
 			ordersSource.onmessage = (event) => {
