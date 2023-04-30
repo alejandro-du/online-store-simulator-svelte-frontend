@@ -93,7 +93,7 @@
 							bind:orderCount
 							bind:productCount
 							bind:disappointingVisitors
-							bind:missedOportunities={missedOpportunities}
+							bind:missedOpportunities
 						/>
 					</CardBody>
 				</Card>

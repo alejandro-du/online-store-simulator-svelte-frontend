@@ -4,7 +4,7 @@
 	export let orderCount;
 	export let productCount;
 	export let disappointingVisitors;
-	export let missedOportunities;
+	export let missedOpportunities;
 
 	let formatter = Intl.NumberFormat('en', { notation: 'compact' });
 </script>
@@ -40,12 +40,12 @@
 	</Col>
 	<Col>
 		<h2>
-			{#if missedOportunities > 0}
+			{#if missedOpportunities > 0}
 				<Icon name="cart-x-fill" />
 			{:else}
 				<Icon name="cart-check" />
 			{/if}
-			{formatter.format(missedOportunities)}
+			{formatter.format(missedOpportunities)}
 		</h2>
 		<div>Missed opportunities</div>
 	</Col>

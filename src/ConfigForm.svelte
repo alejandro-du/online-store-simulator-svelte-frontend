@@ -68,8 +68,9 @@
 				<Input
 					bind:value={$timeoutMillis}
 					type="number"
-					min="1"
-					step="10"
+					min="0"
+					max="10000"
+					step="100"
 				/>
 			</InputGroup>
 			<FormText>Timeout in milliseconds</FormText>
