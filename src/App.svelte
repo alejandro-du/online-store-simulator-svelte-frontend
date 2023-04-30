@@ -27,7 +27,7 @@
 	let ordersChart;
 	let orderCount = 0;
 	let productCount = 0;
-	let missedOportunities = 0;
+	let missedOpportunities = 0;
 	let disappointingVisitors = 0;
 
 	productCountSource = new EventSource(`${$apiUrl}/simulation/productCount`);
@@ -73,7 +73,7 @@
 			ordersSimulationSource.onmessage = (event) => {
 				let data = JSON.parse(event.data);
 				if (data.time <= -1) {
-					missedOportunities += -data.time;
+					missedOpportunities += -data.time;
 					data.time = timeout;
 				}
 				ordersChart.update(data.time);
@@ -93,7 +93,7 @@
 							bind:orderCount
 							bind:productCount
 							bind:disappointingVisitors
-							bind:missedOportunities
+							bind:missedOportunities={missedOpportunities}
 						/>
 					</CardBody>
 				</Card>
