@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 
 export const apiUrl = writable("http://localhost:8080/api");
-export const viewsPerMinute = writable(0);
-export const ordersPerMinute = writable(0);
+export const viewsPerMinute = writable(60);
+export const ordersPerMinute = writable(1);
 export const itemsPerOrder = writable(2);
-export const timeoutMillis = writable(200);
+export const timeoutMillis = writable(500);

@@ -19,31 +19,46 @@
 		timeoutMillis,
 	} from "./stores.js";
 
-	let viewsSource;
-	let ordersSource;
+	let viewsSimulationSource;
+	let ordersSimulationSource;
+	let orderCountSource;
+	let productCountSource;
 	let viewsChart;
 	let ordersChart;
+	let orderCount = 0;
+	let productCount = 0;
 	let missedOportunities = 0;
 	let disappointingVisitors = 0;
 
+	productCountSource = new EventSource(`${$apiUrl}/simulation/productCount`);
+	productCountSource.onmessage = (event) => {
+		let data = JSON.parse(event.data);
+		productCount = data;
+	};
+	orderCountSource = new EventSource(`${$apiUrl}/simulation/orderCount`);
+	orderCountSource.onmessage = (event) => {
+		let data = JSON.parse(event.data);
+		orderCount = data;
+	};
+
 	function updateSimulation() {
-		if (viewsSource) {
-			viewsSource.close();
+		if (viewsSimulationSource) {
+			viewsSimulationSource.close();
 		}
 
-		if (ordersSource) {
-			ordersSource.close();
+		if (ordersSimulationSource) {
+			ordersSimulationSource.close();
 		}
 
 		if ($viewsPerMinute > 0) {
-			viewsSource = new EventSource(
+			viewsSimulationSource = new EventSource(
 				`${$apiUrl}/simulation/views?viewsPerMinute=${$viewsPerMinute}&timeoutMillis=${$timeoutMillis}`
 			);
 			const timeout = $timeoutMillis;
-			viewsSource.onmessage = (event) => {
+			viewsSimulationSource.onmessage = (event) => {
 				let data = JSON.parse(event.data);
-				if (data.time == -1) {
-					disappointingVisitors++;
+				if (data.time <= -1) {
+					disappointingVisitors += -data.time;
 					data.time = timeout;
 				}
 				viewsChart.update(data.time);
@@ -51,14 +66,14 @@
 		}
 
 		if ($ordersPerMinute > 0) {
-			ordersSource = new EventSource(
+			ordersSimulationSource = new EventSource(
 				`${$apiUrl}/simulation/orders?ordersPerMinute=${$ordersPerMinute}&itemsPerOrder=${$itemsPerOrder}&timeoutMillis=${$timeoutMillis}`
 			);
 			const timeout = $timeoutMillis;
-			ordersSource.onmessage = (event) => {
+			ordersSimulationSource.onmessage = (event) => {
 				let data = JSON.parse(event.data);
-				if (data.time == -1) {
-					missedOportunities++;
+				if (data.time <= -1) {
+					missedOportunities += -data.time;
 					data.time = timeout;
 				}
 				ordersChart.update(data.time);
@@ -75,6 +90,8 @@
 				<Card>
 					<CardBody>
 						<Stats
+							bind:orderCount
+							bind:productCount
 							bind:disappointingVisitors
 							bind:missedOportunities
 						/>

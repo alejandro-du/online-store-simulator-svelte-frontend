@@ -68,22 +68,6 @@
 		};
 	}
 
-	async function countProducts() {
-		let eventSource = new EventSource(`${$apiUrl}/products/count`);
-		eventSource.onmessage = (event) => {
-			eventSource.close();
-			showDoneMessage(`${event.data} products.`);
-		};
-	}
-
-	async function countOrders() {
-		let eventSource = new EventSource(`${$apiUrl}/orders/count`);
-		eventSource.onmessage = (event) => {
-			eventSource.close();
-			showDoneMessage(`${event.data} orders.`);
-		};
-	}
-
 	async function deleteAllOrders() {
 		showWaitMessage("Deleting all orders...");
 		let eventSource = new EventSource(`${$apiUrl}/orders/deleteAll`);
@@ -141,13 +125,6 @@
 						Create products...
 					</DropdownItem>
 					<DropdownItem divider />
-					<DropdownItem on:click={countOrders}>
-						Count orders
-					</DropdownItem>
-					<DropdownItem on:click={countProducts}>
-						Count products
-					</DropdownItem>
-					<DropdownItem divider />
 					<DropdownItem on:click={deleteAllOrders}>
 						Delete all orders
 					</DropdownItem>
@@ -201,7 +178,7 @@
 	</ModalFooter>
 </Modal>
 
-<div class="toast-container position-fixed bottom-0 end-0">
+<div class="toast-container position-fixed bottom-0 end-0" style="z-index: 100;">
 	<Toast
 		class="bg-primary text-light"
 		isOpen={showWaitToast}
