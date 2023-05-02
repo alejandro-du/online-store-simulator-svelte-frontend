@@ -74,6 +74,7 @@
 				let data = JSON.parse(event.data);
 				if (data.time <= -1) {
 					missedOpportunities += -data.time;
+					disappointingVisitors += -data.time;
 					data.time = timeout;
 				}
 				orderDelayChart.update(data.time);
