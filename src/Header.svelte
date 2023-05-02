@@ -78,7 +78,7 @@
 	}
 
 	async function deleteAllProducts() {
-		showWaitMessage("Deleteing all products...");
+		showWaitMessage("Deleting all products...");
 		let eventSource = new EventSource(`${$apiUrl}/products/deleteAll`);
 		eventSource.onmessage = (event) => {
 			eventSource.close();
