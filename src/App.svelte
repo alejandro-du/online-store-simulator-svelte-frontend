@@ -28,7 +28,7 @@
 	let orderCount = 0;
 	let productCount = 0;
 	let missedOpportunities = 0;
-	let disappointingVisitors = 0;
+	let disappointedVisitors = 0;
 
 	productCountSource = new EventSource(`${$apiUrl}/simulation/productCount`);
 	productCountSource.onmessage = (event) => {
@@ -58,7 +58,7 @@
 			viewsSimulationSource.onmessage = (event) => {
 				let data = JSON.parse(event.data);
 				if (data.time <= -1) {
-					disappointingVisitors += -data.time;
+					disappointedVisitors += -data.time;
 					data.time = timeout;
 				}
 				productVisitDelayChart.update(data.time);
@@ -74,7 +74,7 @@
 				let data = JSON.parse(event.data);
 				if (data.time <= -1) {
 					missedOpportunities += -data.time;
-					disappointingVisitors += -data.time;
+					disappointedVisitors += -data.time;
 					data.time = timeout;
 				}
 				orderDelayChart.update(data.time);
@@ -93,7 +93,7 @@
 						<Stats
 							bind:orderCount
 							bind:productCount
-							bind:disappointingVisitors
+							bind:disappointedVisitors
 							bind:missedOpportunities
 						/>
 					</CardBody>

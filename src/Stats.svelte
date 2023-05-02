@@ -3,10 +3,18 @@
 
 	export let orderCount;
 	export let productCount;
-	export let disappointingVisitors;
+	export let disappointedVisitors;
 	export let missedOpportunities;
 
-	let formatter = Intl.NumberFormat('en', { notation: 'compact' });
+	let formatter = Intl.NumberFormat("en", { notation: "compact" });
+
+	function clearDisappointedVisitors() {
+		disappointedVisitors = 0;
+	}
+
+	function clearMissedOpportunities() {
+		missedOpportunities = 0;
+	}
 </script>
 
 <Row class="text-center">
@@ -29,19 +37,23 @@
 <Row class="text-center">
 	<Col>
 		<h2>
-			{#if disappointingVisitors > 0}
-				<Icon name="emoji-angry" />
+			{#if disappointedVisitors > 0}
+				<span on:click={clearDisappointedVisitors}>
+					<Icon name="emoji-angry" />
+				</span>
 			{:else}
 				<Icon name="emoji-smile" />
 			{/if}
-			{formatter.format(disappointingVisitors)}
+			{formatter.format(disappointedVisitors)}
 		</h2>
 		<div>Disappointed visitors</div>
 	</Col>
 	<Col>
 		<h2>
 			{#if missedOpportunities > 0}
-				<Icon name="cart-x-fill" />
+				<span on:click={clearMissedOpportunities}>
+					<Icon name="cart-x-fill" />
+				</span>
 			{:else}
 				<Icon name="cart-check" />
 			{/if}
