@@ -13,7 +13,7 @@
 	import Stats from "./Stats.svelte";
 	import {
 		apiUrl,
-		viewsPerMinute,
+		productVisitsPerMinute,
 		ordersPerMinute,
 		itemsPerOrder,
 		timeoutMillis,
@@ -23,8 +23,8 @@
 	let ordersSimulationSource;
 	let orderCountSource;
 	let productCountSource;
-	let viewsChart;
-	let ordersChart;
+	let productVisitDelayChart;
+	let orderDelayChart;
 	let orderCount = 0;
 	let productCount = 0;
 	let missedOpportunities = 0;
@@ -50,9 +50,9 @@
 			ordersSimulationSource.close();
 		}
 
-		if ($viewsPerMinute > 0) {
+		if ($productVisitsPerMinute > 0) {
 			viewsSimulationSource = new EventSource(
-				`${$apiUrl}/simulation/views?viewsPerMinute=${$viewsPerMinute}&timeoutMillis=${$timeoutMillis}`
+				`${$apiUrl}/simulation/visits?productVisitsPerMinute=${$productVisitsPerMinute}&timeoutMillis=${$timeoutMillis}`
 			);
 			const timeout = $timeoutMillis;
 			viewsSimulationSource.onmessage = (event) => {
@@ -61,7 +61,7 @@
 					disappointingVisitors += -data.time;
 					data.time = timeout;
 				}
-				viewsChart.update(data.time);
+				productVisitDelayChart.update(data.time);
 			};
 		}
 
@@ -76,7 +76,7 @@
 					missedOpportunities += -data.time;
 					data.time = timeout;
 				}
-				ordersChart.update(data.time);
+				orderDelayChart.update(data.time);
 			};
 		}
 	}
@@ -109,8 +109,8 @@
 				<Card>
 					<CardBody>
 						<AnimatedChart
-							bind:this={viewsChart}
-							title="Max view delay (ms)"
+							bind:this={productVisitDelayChart}
+							title="Max product visit delay (ms)"
 							names={["Milliseconds", "Missed"]}
 							type={["area", "line"]}
 							curve="smooth"
@@ -121,7 +121,7 @@
 				<Card>
 					<CardBody>
 						<AnimatedChart
-							bind:this={ordersChart}
+							bind:this={orderDelayChart}
 							title="Max order delay (ms)"
 							names={["Milliseconds", "Average"]}
 							type={["area", "line"]}

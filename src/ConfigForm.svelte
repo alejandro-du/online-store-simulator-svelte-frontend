@@ -15,21 +15,21 @@
 		itemsPerOrder,
 		ordersPerMinute,
 		timeoutMillis,
-		viewsPerMinute,
+		productVisitsPerMinute,
 	} from "./stores.js";
 
 	export let update;
 </script>
 
 <FormGroup>
-	<Label for="viewsPerMinute">Views per minute:</Label>
+	<Label for="productVisitsPerMinute">Product visits per minute:</Label>
 	<InputGroup>
 		<InputGroupText><Icon name="people-fill" /></InputGroupText>
-		<Input bind:value={$viewsPerMinute} type="number" />
+		<Input bind:value={$productVisitsPerMinute} type="number" />
 	</InputGroup>
 	<Input
-		id="viewsPerMinute"
-		bind:value={$viewsPerMinute}
+		id="productVisitsPerMinute"
+		bind:value={$productVisitsPerMinute}
 		type="range"
 		min="0"
 		max="100000"
@@ -47,7 +47,7 @@
 		bind:value={$ordersPerMinute}
 		type="range"
 		min="0"
-		max="1000"
+		max="10000"
 		step="100"
 	/>
 </FormGroup>
