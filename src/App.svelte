@@ -29,26 +29,28 @@
 	let productCount = 0;
 	let missedOpportunities = 0;
 	let disappointedVisitors = 0;
+	let updateButtonCaption = "Start";
 
 	productCountSource = new EventSource(`${$apiUrl}/simulation/productCount`);
 	productCountSource.onmessage = (event) => {
 		let data = JSON.parse(event.data);
 		productCount = data;
 	};
+	productCountSource.onerror = (event) => {
+		productCount = -1;
+	};
+
 	orderCountSource = new EventSource(`${$apiUrl}/simulation/orderCount`);
 	orderCountSource.onmessage = (event) => {
 		let data = JSON.parse(event.data);
 		orderCount = data;
 	};
+	orderCountSource.onerror = (event) => {
+		orderCount = -1;
+	};
 
 	function updateSimulation() {
-		if (viewsSimulationSource) {
-			viewsSimulationSource.close();
-		}
-
-		if (ordersSimulationSource) {
-			ordersSimulationSource.close();
-		}
+		stopSimulation();
 
 		if ($productVisitsPerMinute > 0) {
 			viewsSimulationSource = new EventSource(
@@ -63,6 +65,7 @@
 				}
 				productVisitDelayChart.update(data.time);
 			};
+			updateButtonCaption = "Apply";
 		}
 
 		if ($ordersPerMinute > 0) {
@@ -79,7 +82,21 @@
 				}
 				orderDelayChart.update(data.time);
 			};
+
+			updateButtonCaption = "Apply";
 		}
+	}
+
+	function stopSimulation() {
+		if (viewsSimulationSource) {
+			viewsSimulationSource.close();
+		}
+
+		if (ordersSimulationSource) {
+			ordersSimulationSource.close();
+		}
+
+		updateButtonCaption = "Start";
 	}
 </script>
 
@@ -102,7 +119,11 @@
 				<Card>
 					<CardHeader>Settings</CardHeader>
 					<CardBody>
-						<ConfigForm update={updateSimulation} />
+						<ConfigForm
+							update={updateSimulation}
+							stop={stopSimulation}
+							updateButtonCaption={updateButtonCaption}
+						/>
 					</CardBody>
 				</Card>
 			</Col>

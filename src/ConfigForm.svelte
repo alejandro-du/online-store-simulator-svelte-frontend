@@ -18,15 +18,17 @@
 		productVisitsPerMinute,
 	} from "./stores.js";
 
-	export let update;
+	export let update, stop, updateButtonCaption = "Start";
 </script>
 
-<FormGroup>
+<Row>
+	<Col>
+		<FormGroup>
 	<Label for="productVisitsPerMinute">Product visits per minute:</Label>
-	<InputGroup>
-		<InputGroupText><Icon name="people-fill" /></InputGroupText>
+			<InputGroup>
+				<InputGroupText><Icon name="people-fill" /></InputGroupText>
 		<Input bind:value={$productVisitsPerMinute} type="number" />
-	</InputGroup>
+			</InputGroup>
 	<Input
 		id="productVisitsPerMinute"
 		bind:value={$productVisitsPerMinute}
@@ -35,13 +37,15 @@
 		max="100000"
 		step="1000"
 	/>
-</FormGroup>
-<FormGroup>
+		</FormGroup>
+	</Col>
+	<Col>
+		<FormGroup>
 	<Label for="ordersPerMinute">Orders per minute:</Label>
-	<InputGroup>
-		<InputGroupText><Icon name="funnel-fill" /></InputGroupText>
+			<InputGroup>
+				<InputGroupText><Icon name="funnel-fill" /></InputGroupText>
 		<Input bind:value={$ordersPerMinute} type="number" />
-	</InputGroup>
+			</InputGroup>
 	<Input
 		id="ordersPerMinute"
 		bind:value={$ordersPerMinute}
@@ -50,7 +54,9 @@
 		max="10000"
 		step="100"
 	/>
-</FormGroup>
+		</FormGroup>
+	</Col>
+</Row>
 <Row>
 	<Col>
 		<FormGroup>
@@ -70,7 +76,7 @@
 					type="number"
 					min="0"
 					max="10000"
-					step="100"
+					step="10"
 				/>
 			</InputGroup>
 			<FormText>Timeout in milliseconds</FormText>
@@ -80,8 +86,9 @@
 <Row>
 	<Col>
 		<hr />
-		<div class="d-flex flex-row-reverse bd-highlight">
-			<Button on:click={update} color="primary">Apply</Button>
+		<div class="d-flex flex-row-reverse gap-2">
+			<Button on:click={update} color="primary" class="">{updateButtonCaption}</Button>
+			<Button on:click={stop} color="light">Stop</Button>
 		</div>
 	</Col>
 </Row>

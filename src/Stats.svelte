@@ -21,14 +21,14 @@
 	<Col>
 		<h2>
 			<Icon name="bag-check" />
-			{formatter.format(orderCount)}
+			{orderCount == -1 ? "Error" : formatter.format(orderCount)}
 		</h2>
 		<div>Orders</div>
 	</Col>
 	<Col>
 		<h2>
 			<Icon name="box" />
-			{formatter.format(productCount)}
+			{productCount == -1 ? "Error" : formatter.format(productCount)}
 		</h2>
 		<div>Products</div>
 	</Col>
