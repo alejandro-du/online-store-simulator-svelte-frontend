@@ -23,6 +23,8 @@
 	let ordersSimulationSource;
 	let orderCountSource;
 	let productCountSource;
+	let visitsChart;
+	let ordersChart;
 	let productVisitDelayChart;
 	let orderDelayChart;
 	let orderCount = 0;
@@ -54,33 +56,36 @@
 
 		if ($productVisitsPerMinute > 0) {
 			viewsSimulationSource = new EventSource(
-				`${$apiUrl}/simulation/visits?productVisitsPerMinute=${$productVisitsPerMinute}&timeoutMillis=${$timeoutMillis}`
+				`${$apiUrl}/simulation/visits?productVisitsPerMinute=${$productVisitsPerMinute}`
 			);
+			const visitsPerSecond = Math.floor($productVisitsPerMinute / 60);
 			const timeout = $timeoutMillis;
 			viewsSimulationSource.onmessage = (event) => {
 				let data = JSON.parse(event.data);
-				if (data.time <= -1) {
-					disappointedVisitors += -data.time;
-					data.time = timeout;
+				if (data.count < visitsPerSecond) {
+					disappointedVisitors += visitsPerSecond - data.count;
+				}
+				if (data.time > timeout) {
+					disappointedVisitors += visitsPerSecond;
 				}
 				productVisitDelayChart.update(data.time);
+				visitsChart.update(data.count);
 			};
 			updateButtonCaption = "Apply";
 		}
 
 		if ($ordersPerMinute > 0) {
 			ordersSimulationSource = new EventSource(
-				`${$apiUrl}/simulation/orders?ordersPerMinute=${$ordersPerMinute}&itemsPerOrder=${$itemsPerOrder}&timeoutMillis=${$timeoutMillis}`
+				`${$apiUrl}/simulation/orders?ordersPerMinute=${$ordersPerMinute}&itemsPerOrder=${$itemsPerOrder}`
 			);
-			const timeout = $timeoutMillis;
+			const ordersPerSecond = Math.floor($ordersPerMinute / 60);
 			ordersSimulationSource.onmessage = (event) => {
 				let data = JSON.parse(event.data);
-				if (data.time <= -1) {
-					missedOpportunities += -data.time;
-					disappointedVisitors += -data.time;
-					data.time = timeout;
+				if (data.count < ordersPerSecond) {
+					missedOpportunities += ordersPerSecond - data.count;
 				}
 				orderDelayChart.update(data.time);
+				ordersChart.update(data.count);
 			};
 
 			updateButtonCaption = "Apply";
@@ -122,35 +127,69 @@
 						<ConfigForm
 							update={updateSimulation}
 							stop={stopSimulation}
-							updateButtonCaption={updateButtonCaption}
+							{updateButtonCaption}
 						/>
 					</CardBody>
 				</Card>
 			</Col>
 			<Col md="9" class="gy-3">
-				<Card>
-					<CardBody>
-						<AnimatedChart
-							bind:this={productVisitDelayChart}
-							title="Max product visit delay (ms)"
-							names={["Milliseconds", "Missed"]}
-							type={["area", "line"]}
-							curve="smooth"
-						/>
-					</CardBody>
-				</Card>
-				<p />
-				<Card>
-					<CardBody>
-						<AnimatedChart
-							bind:this={orderDelayChart}
-							title="Max order delay (ms)"
-							names={["Milliseconds", "Average"]}
-							type={["area", "line"]}
-							curve="smooth"
-						/>
-					</CardBody>
-				</Card>
+				<Row>
+					<Col>
+						<Card>
+							<CardBody>
+								<AnimatedChart
+									bind:this={visitsChart}
+									title="Visits per second"
+									names={["Visits"]}
+									type={["area", "line"]}
+									curve="smooth"
+								/>
+							</CardBody>
+						</Card>
+					</Col>
+					<Col>
+						<Card>
+							<CardBody>
+								<AnimatedChart
+									bind:this={ordersChart}
+									title="Orders per second"
+									names={["Orders"]}
+									type={["area", "line"]}
+									curve="smooth"
+								/>
+							</CardBody>
+						</Card>
+					</Col>
+				</Row>
+				<p/>
+				<Row>
+					<Col>
+						<Card>
+							<CardBody>
+								<AnimatedChart
+									bind:this={productVisitDelayChart}
+									title="Product visits delay (ms)"
+									names={["Milliseconds", "Missed"]}
+									type={["area", "line"]}
+									curve="smooth"
+								/>
+							</CardBody>
+						</Card>
+					</Col>
+					<Col>
+						<Card>
+							<CardBody>
+								<AnimatedChart
+									bind:this={orderDelayChart}
+									title="Orders delay (ms)"
+									names={["Milliseconds", "Average"]}
+									type={["area", "line"]}
+									curve="smooth"
+								/>
+							</CardBody>
+						</Card>
+					</Col>
+				</Row>
 			</Col>
 		</Row>
 	</Container>

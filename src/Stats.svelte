@@ -20,14 +20,26 @@
 <Row class="text-center">
 	<Col>
 		<h2>
-			<Icon name="bag-check" />
+			{#if productCount == -1}
+				<span style="color: red">
+					<Icon name="exclamation-triangle" />
+				</span>
+			{:else}
+				<Icon name="bag-check" />
+			{/if}
 			{orderCount == -1 ? "Error" : formatter.format(orderCount)}
 		</h2>
 		<div>Orders</div>
 	</Col>
 	<Col>
 		<h2>
-			<Icon name="box" />
+			{#if productCount <= 0}
+				<span style="color: red">
+					<Icon name="exclamation-triangle" />
+				</span>
+			{:else}
+				<Icon name="box" />
+			{/if}
 			{productCount == -1 ? "Error" : formatter.format(productCount)}
 		</h2>
 		<div>Products</div>

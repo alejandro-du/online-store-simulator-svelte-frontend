@@ -18,42 +18,44 @@
 		productVisitsPerMinute,
 	} from "./stores.js";
 
-	export let update, stop, updateButtonCaption = "Start";
+	export let update,
+		stop,
+		updateButtonCaption = "Start";
 </script>
 
 <Row>
 	<Col>
 		<FormGroup>
-	<Label for="productVisitsPerMinute">Product visits per minute:</Label>
+			<Label for="productVisitsPerMinute">Product visits per minute:</Label>
 			<InputGroup>
 				<InputGroupText><Icon name="people-fill" /></InputGroupText>
-		<Input bind:value={$productVisitsPerMinute} type="number" />
+				<Input bind:value={$productVisitsPerMinute} type="number" />
 			</InputGroup>
-	<Input
-		id="productVisitsPerMinute"
-		bind:value={$productVisitsPerMinute}
-		type="range"
-		min="0"
-		max="100000"
-		step="1000"
-	/>
+			<Input
+				id="productVisitsPerMinute"
+				bind:value={$productVisitsPerMinute}
+				type="range"
+				min="0"
+				max="100000"
+				step="1000"
+			/>
 		</FormGroup>
 	</Col>
 	<Col>
 		<FormGroup>
-	<Label for="ordersPerMinute">Orders per minute:</Label>
+			<Label for="ordersPerMinute">Orders per minute:</Label>
 			<InputGroup>
 				<InputGroupText><Icon name="funnel-fill" /></InputGroupText>
-		<Input bind:value={$ordersPerMinute} type="number" />
+				<Input bind:value={$ordersPerMinute} type="number" />
 			</InputGroup>
-	<Input
-		id="ordersPerMinute"
-		bind:value={$ordersPerMinute}
-		type="range"
-		min="0"
-		max="10000"
-		step="100"
-	/>
+			<Input
+				id="ordersPerMinute"
+				bind:value={$ordersPerMinute}
+				type="range"
+				min="0"
+				max="10000"
+				step="100"
+			/>
 		</FormGroup>
 	</Col>
 </Row>
@@ -71,13 +73,7 @@
 		<FormGroup>
 			<InputGroup>
 				<InputGroupText><Icon name="clock-fill" /></InputGroupText>
-				<Input
-					bind:value={$timeoutMillis}
-					type="number"
-					min="0"
-					max="10000"
-					step="10"
-				/>
+				<Input bind:value={$timeoutMillis} type="number" min="0" max="10000" step="10" />
 			</InputGroup>
 			<FormText>Timeout in milliseconds</FormText>
 		</FormGroup>
