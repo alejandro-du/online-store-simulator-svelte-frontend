@@ -27,7 +27,7 @@
 
 	import { apiUrl } from "./stores";
 
-	let showCreateDemoProductsModel = false;
+	let showCreateProductsModel = false;
 	let showWaitToast = false;
 	let showDoneToast = false;
 	let toastHeader = "";
@@ -51,11 +51,11 @@
 		showDoneToast = true;
 	}
 
-	async function createDemoProducts() {
-		showCreateDemoProductsModel = false;
-		showWaitMessage("Creating demo products...");
+	async function createProducts() {
+		showCreateProductsModel = false;
+		showWaitMessage("Creating products...");
 		let eventSource = new EventSource(
-			`${$apiUrl}/products/createDemoData?count=${numberOfProducts}&minPrice=${minProductPrice}&maxPrice=${maxProductPrice}`
+			`${$apiUrl}/products/create?count=${numberOfProducts}&minPrice=${minProductPrice}&maxPrice=${maxProductPrice}`
 		);
 
 		let count = 0;
@@ -120,7 +120,7 @@
 				</DropdownToggle>
 				<DropdownMenu>
 					<DropdownItem
-						on:click={() => (showCreateDemoProductsModel = true)}
+						on:click={() => (showCreateProductsModel = true)}
 					>
 						Create products...
 					</DropdownItem>
@@ -137,8 +137,8 @@
 	</Nav>
 </Navbar>
 
-<Modal isOpen={showCreateDemoProductsModel}>
-	<ModalHeader>Create demo products</ModalHeader>
+<Modal isOpen={showCreateProductsModel}>
+	<ModalHeader>Create products</ModalHeader>
 	<ModalBody>
 		<Form>
 			<FormGroup>
@@ -171,10 +171,10 @@
 		</Form>
 	</ModalBody>
 	<ModalFooter>
-		<Button on:click={() => (showCreateDemoProductsModel = false)}
+		<Button on:click={() => (showCreateProductsModel = false)}
 			>Cancel</Button
 		>
-		<Button on:click={createDemoProducts} color="primary">Create</Button>
+		<Button on:click={createProducts} color="primary">Create</Button>
 	</ModalFooter>
 </Modal>
 
